@@ -1,0 +1,46 @@
+#include <iostream>
+#include <cmath>
+#include <limits>
+
+const double k = 9e9;
+
+double calculateElectricField(double x, double q, double length, int segments) {
+    double increment = length / segments;
+    double electricField = 0.0;
+
+    for (int i = 0; i < segments; ++i) {
+        double segmentPos = i * increment + increment / 2;
+        double r = sqrt(x * x + segmentPos * segmentPos);
+        electricField += k * q * increment / (r * r);
+    }
+
+    return electricField;
+}
+
+int main() {
+    double length = 1.0;
+    double x = 0.5;
+    double q = 2e-9;
+    double desiredElectricField = 24.0e-9;
+
+    int segments = 1;
+    double electricField = 0.0;
+
+    int maxIterations = 1000;
+
+    for (int i = 0; i < maxIterations; ++i) {
+        electricField = calculateElectricField(x, q, length, segments);
+        if (fabs(electricField - desiredElectricField) < std::numeric_limits<double>::epsilon()) {
+            break;
+        }
+        segments++;
+    }
+
+    std::cout << "Smallest increment required: " << length / segments << " m" << std::endl;
+    
+    return 0;
+}
+
+
+
+// Output is “Best increment value: 1e-05 meters”
