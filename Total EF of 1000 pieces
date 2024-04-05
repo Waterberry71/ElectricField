@@ -1,0 +1,35 @@
+#include <iostream>
+#include <cmath>
+
+using namespace std;
+
+const double k = 9e9; 
+
+double electricField(double charge, double distance) {
+    return k * charge / (distance * distance);
+}
+
+int main() {
+    double length = 1.0; 
+    double distance_to_charge = 0.5;
+    double q = 2e-9; 
+    double increment = length / 1000; 
+
+    double total_electric_field = 0.0;
+
+    for (int i = 0; i < 1000; ++i) {
+        double segment_position = (i + 0.5) * increment; 
+        double distance = sqrt(segment_position * segment_position + distance_to_charge * distance_to_charge);
+        double cosine_theta = segment_position / distance; 
+        double e_field = electricField(q * increment, distance) * cosine_theta;
+        total_electric_field += e_field;
+    }
+
+    cout << "Total electric field at point P: " << total_electric_field << " N/C" << endl;
+
+    return 0;
+}
+
+
+
+// Output: 19.8 N/C
