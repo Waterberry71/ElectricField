@@ -1,9 +1,10 @@
 #include <iostream>
 #include <cmath>
-
+#include <limits>
 using namespace std;
 
 const double k = 9e9; 
+
 double electricField(double charge, double distance) {
     return k * charge / (distance * distance);
 }
@@ -12,25 +13,33 @@ int main() {
     double length = 1.0; 
     double distance_to_charge = 0.5; 
     double q = 2e-9; 
-    double increment = length / 100; 
+    double desired_electric_field = 24.0; // Desired electric field value
 
-    double total_electric_field = 0.0;
+    double min_increment = length; // Initialize with maximum value
+    double min_error = numeric_limits<double>::max(); // Initialize with maximum error
 
-        for (int i = 0; i < 100; ++i) {
-        double segment_position = (i + 0.5) * increment;
-        double distance = sqrt(segment_position * segment_position  +  distance_to_charge  * distance_to_charge);
-        double e_field = electricField(q * increment, distance);
-        total_electric_field += e_field;
+    for (int segments = 1; segments <= 1000; ++segments) {
+        double increment = length / segments; // Calculate increment
+        double total_electric_field = 0.0;
+
+        for (int i = 0; i < segments; ++i) {
+            double segment_position = (i + 0.5) * increment;
+            double distance = sqrt(segment_position * segment_position  +  distance_to_charge  * distance_to_charge);
+            double e_field = electricField(q * increment, distance);
+            total_electric_field += e_field;
+        }
+
+        // Calculate error
+        double error = abs(total_electric_field - desired_electric_field);
+
+        // Check if error is smaller than previous smallest error
+        if (error < min_error) {
+            min_error = error;
+            min_increment = increment;
+        }
     }
 
-    cout << "Total electric field at point P: " << total_electric_field << " N/C" << endl;
+    cout << "Smallest increment required: " << min_increment << " m" << endl;
 
     return 0;
 }
-
-
-
-
-// Output: 39.8574 N/C
-
-
